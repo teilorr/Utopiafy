@@ -9,13 +9,13 @@ from .errors import (
     BadArgument, 
 )
 
-T_DICT = TypeVar("T_DICT", bound=dict)
+T = TypeVar("T")
 
 class Database:
     def __init__(self, fp: str) -> None:
-        if not os.path.splitext(fp)[1] == ".db":
+        if not (ext := os.path.splitext(fp)[1]) == ".db":
             raise BadArgument(
-                f"fp must be a SQLite .db file, not {os.path.splitext(fp)[1]}"
+                f"fp must be a SQLite .db file, not {ext}"
             )
         fp = fp.replace("\\", "/")
         self.fp: str = fp
@@ -38,7 +38,7 @@ class Database:
             await cursor.execute(query, *args)
             await self.conn.commit()
 
-    async def _insert(self, **kwargs: T_DICT) -> T_DICT:
+    async def _insert(self, **kwargs: T) -> T:
         args = kwargs.values()
 
         # no idea how this works, it just manipulates the query in a way that i don't know how i made it

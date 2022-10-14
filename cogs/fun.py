@@ -6,7 +6,7 @@ from typing import (
 from discord.ext import commands
 import discord
 
-from utils.others.game_idea_gen import IdeiaGenerator
+from utils.others.phrase_gen import IdeiaGenerator
 from random import Random
 import datetime as dt
 import contextlib
@@ -85,10 +85,11 @@ class Fun(commands.Cog):
         await msg.clear_reactions()
         await msg.edit(content=f"> {winner.name} ganhou o duelo! Parabéns")
 
-    @commands.command(name="game_idea", aliases=["jogo", "ideia_de_jogo"], help="Gera uma ideia de jogo muito louca!")
+    @commands.command(name="jogo", help="Gera uma ideia de jogo muito louca!")
     async def game_ideia(self, ctx: commands.Context, member: discord.Member=None) -> None:
         gen = IdeiaGenerator()
-        await ctx.send(f"> {gen.generate((ctx.author.nick or ctx.author.name) if not member else (member.nick or member.name))}")
+        await ctx.send(f"> {gen.generate((member.nick or member.name) if member else (ctx.author.nick or ctx.author.name))}")
+        
 
 async def setup(bot: Utopify) -> None:
     cog = Fun(bot)

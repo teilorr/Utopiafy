@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from random import Random
 import re
 
@@ -10,26 +12,6 @@ Eu acho que @member@ é @mood@ @adjetive@
 Não é por nada não, mas @member@ é @mood@ @adjetive@
 Não consigo saber de tudo, mas sei que @member@ é @mood@ @adjetive@
 Cá entre nós, @member@ é @mood@ @adjetive@
-#end
-
-#member:
-teilor
-mon
-copo
-nickboy12
-emno
-fire
-raposito
-fogado
-kidenax
-buddo
-nyko
-cazum
-andré
-A meme
-sabaku
-rustzo
-nathyz
 #end
 
 #adjetive:
@@ -69,6 +51,8 @@ obviamente
 #end
 """
 
+
+# Heeeyyy! Ideia de gerador por Sebastian Lague!
 class IdeiaGenerator:
     def get_category(self, category_name) -> str:
         start_tag = f"#{category_name}:\n"
@@ -87,22 +71,15 @@ class IdeiaGenerator:
     def generate_adjetive(self):
         return self.pick_random("adjetive")
 
-    def generate_member(self):
-        return self.pick_random("member")
-
-    def fill_template(self, template: str, member: str | None=None) -> str:
+    def fill_template(self, template: str, member: str) -> str:
+        template = template.replace("@member@", member)
         matches: list[str] = re.findall(r"\@(.*?\@)", template)
-        if member is not None:
-            template = template.replace("@member@", member)
         
         for generator in matches:
             generator = generator.removesuffix("@")
             match generator:
                 case "mood":
                     replacement = self.generate_mood()
-
-                case "member":
-                    replacement = self.generate_member()
 
                 case "adjetive":
                     replacement = self.generate_adjetive()

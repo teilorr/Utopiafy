@@ -1,10 +1,11 @@
 from __future__ import annotations
-from re import A
 from typing import (
-    TYPE_CHECKING
+    TYPE_CHECKING,
+    Optional
 )
 
 from components import ViewSubmitSuggestion
+from utils.databases import LevesDatabase
 from utils.databases import Suggestions
 from discord.ext import commands
 from utils import Configs
@@ -78,11 +79,25 @@ class Others(commands.Cog):
 
             await ctx.send("> Sugestão aprovada com sucesso!")
 
+    @commands.command(name="rank", help="Mostra seu nível")
+    async def rank(self, ctx: commands.Context, member: Optional[discord.Member]=None) -> None:
+        async with LevesDatabase() as db:
+            if member:
+                xp, lvl = await db.get_rank(member.id)
+            else:
+                xp, lvl = await db.get_rank(ctx.author.id)
+            
+            await ctx.send(f"> Você é ***level {lvl}*** com ***{xp}xp***")
+
     @commands.command(name="minecraft", help="Mostra informações sobre o servidor de mine")
     async def minecraft(self, ctx: commands.Context):
         await ctx.send(
-            "> IP: ***pudinsutopiaanarchy.jogar.io***\n"
-            "> Versões: ***1.16.5 - 1.19.2***"
+            "> Para PC:\n"
+            "> IP: ***pudinsutopiaanarchy.jogar.io***\n\n"
+            "> Para Mobile:\n"
+            "> IP: ***br-enx-13.enxadahost.com***\n"
+            "> Porta: 10002\n\n"
+            "> Versões: ***1.16.5 - 1.19.2*** *(Para PC e Mobile)*"
         )
 
 async def setup(bot: Utopify) -> None:
