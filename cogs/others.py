@@ -105,8 +105,7 @@ class Others(commands.Cog):
 
             msg = ""
             for pos, member in enumerate(ranks):
-                member.update({"position": pos + 1})
-                msg = msg + f"***{member.get('position')}. {member.get('name')}*** - *level {member.get('lvl')}, {member.get('xp')}xp*\n"
+                msg = msg + f"***{pos + 1}. {member.get('name')}*** - *level {member.get('lvl')}, {member.get('xp')}xp*\n"
 
             embed = discord.Embed(
                 title="Leaderboard",
