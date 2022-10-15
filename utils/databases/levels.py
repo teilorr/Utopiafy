@@ -62,3 +62,15 @@ class LevesDatabase(Database):
             )
             row = await cursor.fetchone()
             return (row[2], row[3])
+
+    async def get_leaderboard_ids(self) -> set[int]:
+        leaderboard: set[int] = set()
+        async with self.conn.cursor() as cursor:
+            await cursor.execute(
+                f"SELECT member_id FROM {self.table_name} ORDER BY level DESC LIMIT 10"
+            )
+            rows = await cursor.fetchall()
+            for row in rows:
+                leaderboard.add(row[0])
+
+        return leaderboard

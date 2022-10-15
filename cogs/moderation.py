@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
+    Optional
 )
 
 from discord.ext import commands
@@ -8,8 +9,8 @@ import discord
 
 from utils import (
     convertToSeconds,
+    WarningsDatabase,
     Configs,
-    WarningsDatabase
 )
 
 import datetime as dt
@@ -153,7 +154,7 @@ class Moderation(commands.Cog):
         await logs_msg.add_reaction("\U00002b1c") # quadrado branco
         await logs_msg.add_reaction("\U0001f5d1") # lixeira
 
-    @commands.command(name="warn", hidden=True)
+    @commands.command(name="warn", help="Avisa o membro solicitado", hidden=True)
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx: commands.Context, member: discord.Member, *, reason: str) -> None:
         async with WarningsDatabase() as db:
@@ -173,7 +174,7 @@ class Moderation(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
             await ctx.send(embed=embed)
 
-    @commands.command(name="warnings", hidden=True)
+    @commands.command(name="warnings", aliases=["warns"], help="Mostra os warns do membro solicitado", hidden=True)
     async def warns(self, ctx: commands.Context, member: discord.Member) -> None:
         async with WarningsDatabase() as db:
             warns = await db.get_warns_from(member)
@@ -186,7 +187,7 @@ class Moderation(commands.Cog):
             menu = WarnsMenuPages(formatter)
             await menu.start(ctx)
 
-    @commands.command(name="remove_warn", aliases=["warn_remove"], hidden=True)
+    @commands.command(name="remove_warn", aliases=["warn_remove"], help="Remove um warn baseado no id do mesmo", hidden=True)
     @commands.has_permissions(manage_channels=True)
     async def remove_warn(self, ctx: commands.Context, warn_id: int) -> None:
         async with WarningsDatabase() as db:
@@ -211,12 +212,18 @@ class Moderation(commands.Cog):
             await ctx.send(f"> Deletei o warn de *{member}* com sucesso", embed=embed)
             await self.bot.logs_channel.send(embed=embed)
 
-    @commands.command(name="clear_warnings", aliases=["clear_warns"], hidden=True)
+    @commands.command(name="clear_warnings", aliases=["clear_warns"], help="Limpa os warns do membro solicitado",hidden=True)
     @commands.has_permissions(manage_channels=True)
     async def clear_warns(self, ctx: commands.Context, member: discord.Member) -> None:
         async with WarningsDatabase() as db:
             await db.clear_warns_from(member, current_guild=ctx.guild)
             await ctx.send(f"> Limpei os warns de *{member}* com sucesso! :tada:")
+
+    @commands.command(name="clear", help="Limpa o chat", hidden=True)
+    @commands.has_permissions(manage_messages=True)
+    async def clear(self, ctx: commands.Context, limit: int, reason: Optional[str]=None) -> None:
+        deleted = await ctx.channel.purge(limit=limit, reason=reason or "Nenhum motivo informado")
+        await ctx.send(f"> Limpei {len(deleted)} mensagens com sucesso")
 
 async def setup(bot: Utopify) -> None:
     cog = Moderation(bot)

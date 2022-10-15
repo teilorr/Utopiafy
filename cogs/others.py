@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
-    Optional
+    Optional,
+    Union
 )
 
 from components import ViewSubmitSuggestion
@@ -87,16 +88,44 @@ class Others(commands.Cog):
             else:
                 xp, lvl = await db.get_rank(ctx.author.id)
             
-            await ctx.send(f"> Você é ***level {lvl}*** com ***{xp}xp***")
+            await ctx.send(f"> *{member if member else 'Você'}* é ***level {lvl}*** com ***{xp}xp***")
+
+    @commands.command(name="leaderboard", aliases=["top"], help="Leaderboard de xp do server")
+    async def leaderboard(self, ctx: commands.Context) -> None:
+        async with ctx.typing():
+            ranks: list[dict[str, Union[int, str]]] = []
+            async with LevesDatabase() as db:
+                leaderboard_ids = await db.get_leaderboard_ids()
+                for m_id in leaderboard_ids:
+                    xp, lvl = await db.get_rank(m_id)
+                    member = await ctx.guild.fetch_member(m_id)
+                    ranks.append({"xp": xp, "lvl": lvl, "name": member.name})
+
+                ranks = sorted(ranks, key=lambda x: x["lvl"], reverse=True)
+
+            msg = ""
+            for pos, member in enumerate(ranks):
+                member.update({"position": pos + 1})
+                msg = msg + f"***{member.get('position')}. {member.get('name')}*** - *level {member.get('lvl')}, {member.get('xp')}xp*\n"
+
+            embed = discord.Embed(
+                title="Leaderboard",
+                description=msg,
+                color=discord.Color.brand_green()
+                )
+
+            await ctx.send(embed=embed)
 
     @commands.command(name="minecraft", help="Mostra informações sobre o servidor de mine")
     async def minecraft(self, ctx: commands.Context):
         await ctx.send(
             "> Para PC:\n"
             "> IP: ***pudinsutopiaanarchy.jogar.io***\n\n"
+
             "> Para Mobile:\n"
             "> IP: ***br-enx-13.enxadahost.com***\n"
             "> Porta: 10002\n\n"
+            
             "> Versões: ***1.16.5 - 1.19.2*** *(Para PC e Mobile)*"
         )
 
