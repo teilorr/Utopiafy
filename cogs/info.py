@@ -13,7 +13,7 @@ class Info(commands.Cog):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 
-    @commands.command(name="user_info", help="Mostra informações de um usuário")
+    @commands.command(name="user_info", aliases=["userinfo"], help="Mostra informações de um usuário")
     async def user_info(self, ctx: commands.Context, member: discord.Member) -> None:
             joined_at_formated = discord.utils.format_dt(member.joined_at)
             created_at_formated = discord.utils.format_dt(member.created_at)
@@ -34,6 +34,12 @@ class Info(commands.Cog):
                 embed.set_thumbnail(url=member.display_avatar.url)
 
             await ctx.send("Tente os comandos por context menu também!", embed=embed)
+
+    @commands.command(name="ping", help="Mostra o ping do bot")
+    async def _ping(self, ctx: commands.Context) -> None:
+        await ctx.send(
+            f"> `{self.bot.latency * 1000:.2f}ms` de latência \U0001f4e1"
+        )
 
 async def setup(bot: Utopify) -> None:
     cog = Info(bot)
