@@ -22,13 +22,10 @@ macho
 chad
 sigma
 alpha
-old spice
 femêa
 mulherzinha
-redbull
 bluepill
 redpill
-guaraná
 homem de verdade
 utopier
 randola

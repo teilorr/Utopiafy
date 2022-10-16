@@ -15,7 +15,6 @@ from utils import (
 
 import datetime as dt
 from components.menus.show_warns import MySource, WarnsMenuPages
-import re
 
 if TYPE_CHECKING:
     from core import Utopify
@@ -224,6 +223,14 @@ class Moderation(commands.Cog):
     async def clear(self, ctx: commands.Context, limit: int, reason: Optional[str]=None) -> None:
         deleted = await ctx.channel.purge(limit=limit, reason=reason or "Nenhum motivo informado")
         await ctx.send(f"> Limpei {len(deleted)} mensagens com sucesso")
+
+    @commands.command(name="say", hidden=True)
+    @commands.has_permissions(manage_messages=True)
+    async def say(self, ctx: commands.Context, channel: discord.TextChannel, *, msg: str) -> None:
+        if channel:
+            await channel.send(msg)
+        else:
+            await ctx.send(msg)
 
 async def setup(bot: Utopify) -> None:
     cog = Moderation(bot)

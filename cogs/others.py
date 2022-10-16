@@ -88,7 +88,7 @@ class Others(commands.Cog):
             else:
                 xp, lvl = await db.get_rank(ctx.author.id)
             
-            await ctx.send(f"> *{member if member else 'Você'}* é ***level {lvl}*** com ***{xp}xp***")
+            await ctx.send(f"> {'*' + str(member) + '*' if member else 'Você'} é ***level {lvl}*** com ***{xp}xp***")
 
     @commands.command(name="leaderboard", aliases=["top"], help="Leaderboard de xp do server")
     async def leaderboard(self, ctx: commands.Context) -> None:
@@ -101,7 +101,7 @@ class Others(commands.Cog):
                     member = await ctx.guild.fetch_member(m_id)
                     ranks.append({"xp": xp, "lvl": lvl, "name": member.name})
 
-                ranks = sorted(ranks, key=lambda x: x["lvl"], reverse=True)
+                ranks = sorted(ranks, key=lambda x: x["xp"], reverse=True)
 
             msg = ""
             for pos, member in enumerate(ranks):
@@ -125,8 +125,13 @@ class Others(commands.Cog):
             "> IP: ***br-enx-13.enxadahost.com***\n"
             "> Porta: 10002\n\n"
             
-            "> Versões: ***1.16.5 - 1.19.2*** *(Para PC e Mobile)*"
+            "> Versões: ***1.16.5 - 1.19.2*** *(Para PC e Mobile)*\n"
+            "> Canal de ajuda: <#1031001249358819339>"
         )
+
+    @commands.command(name="source", help="URL para o código do bot")
+    async def source(self, ctx: commands.Context) -> None:
+        await ctx.send("> *Source:* ***https://github.com/teilorr/Utopiafy***")
 
 async def setup(bot: Utopify) -> None:
     cog = Others(bot)

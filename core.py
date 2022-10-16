@@ -17,15 +17,18 @@ class Utopify(commands.Bot):
         super().__init__(
             command_prefix=commands.when_mentioned_or("=="),
             case_insensitive=True,
-            intents=discord.Intents.all(),
             strip_after_prefix=True,
             help_command=HelpClass(),
+            intents=discord.Intents.all(),
             activity=discord.Game(name="Em busca do Utopia Automático"),
             status=discord.Status.idle if on_development else discord.Status.online,
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False,
+                users=True,
+            )
         )
 
     async def setup_hook(self) -> None:
-
         # loads every file ending in .py besides the ones that starts with _
         for file in pathlib.Path("./cogs").glob("**/[!_]*.py"):
             extension = ".".join(file.parts) \
@@ -47,7 +50,6 @@ class Utopify(commands.Bot):
         print(f"{self.user}/{self.user.id} online")
 
     async def ready_once(self):
-
         def error_handler(task: asyncio.Task):
             exc = task.exception()
             if exc:
