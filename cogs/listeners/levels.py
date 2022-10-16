@@ -34,7 +34,7 @@ class Levels(commands.Cog):
         if message.author in self.on_cooldown:
             return
 
-        xp = random.randint(15, 25)
+        xp = 20
         async with LevesDatabase() as db:
             total_xp, lvl = await db.increment_xp(message.author.id, xp)
             if total_xp and lvl:
