@@ -227,10 +227,7 @@ class Moderation(commands.Cog):
     @commands.command(name="say", hidden=True)
     @commands.has_permissions(manage_messages=True)
     async def say(self, ctx: commands.Context, channel: discord.TextChannel, *, msg: str) -> None:
-        if channel:
-            await channel.send(msg)
-        else:
-            await ctx.send(msg)
+        await channel.send(msg)
 
 async def setup(bot: Utopify) -> None:
     cog = Moderation(bot)
