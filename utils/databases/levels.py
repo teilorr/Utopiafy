@@ -18,6 +18,7 @@ class LevesDatabase(Database):
             )
 
     async def increment_xp(self, member_id: int, amount: int) -> tuple[int] | tuple[bool]:
+        """Retorna o level e o xp total do user se ele upar"""
         async with self.conn.cursor() as cursor:
             await cursor.execute(
                 f"SELECT * FROM {self.table_name} WHERE member_id=?",
