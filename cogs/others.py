@@ -88,7 +88,7 @@ class Others(commands.Cog):
             else:
                 xp, lvl = await db.get_rank(ctx.author.id)
             
-            await ctx.send(f"> {'*' + str(member) + '*' if member else 'Você'} é ***level {lvl}*** com ***{xp}xp***")
+            await ctx.send(f"> {('*' + str(member) + '*') if member else 'Você'} é ***level {lvl}*** com ***{xp}xp***")
 
     @commands.command(name="leaderboard", aliases=["top"], help="Leaderboard de xp do server")
     async def leaderboard(self, ctx: commands.Context) -> None:
@@ -114,20 +114,6 @@ class Others(commands.Cog):
                 )
 
             await ctx.send(embed=embed)
-
-    @commands.command(name="minecraft", help="Mostra informações sobre o servidor de mine")
-    async def minecraft(self, ctx: commands.Context):
-        await ctx.send(
-            "> Para PC:\n"
-            "> IP: ***pudinsutopiaanarchy.jogar.io***\n\n"
-
-            "> Para Mobile:\n"
-            "> IP: ***br-enx-13.enxadahost.com***\n"
-            "> Porta: 10002\n\n"
-            
-            "> Versões: ***1.16.5 - 1.19.2*** *(Para PC e Mobile)*\n"
-            "> Canal de ajuda: <#1031001249358819339>"
-        )
 
     @commands.command(name="source", help="URL para o código do bot")
     async def source(self, ctx: commands.Context) -> None:
