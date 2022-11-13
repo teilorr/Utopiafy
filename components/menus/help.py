@@ -80,8 +80,8 @@ class HelpClass(commands.HelpCommand):
     def __init__(self):
         super().__init__(command_attrs={})
 
-    def get_command_signature(self, command: commands.Command):
-        return f"{self.context.prefix}{command.qualified_name}"
+    def get_command_signature(self, command: commands.Command) -> str:
+        return f"{self.context.prefix}{command.name} {command.signature}"
 
     def get_command_brief(self, command: commands.Command):
         return command.short_doc or 'O Comando não está documentado'
