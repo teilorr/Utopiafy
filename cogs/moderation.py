@@ -26,11 +26,11 @@ class Moderation(commands.Cog):
     @commands.command(name="ban", help="Bane um mebro", hidden=True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
-        await member.ban(reason=reason or "Motivo não informado")
+        await member.ban(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
 
-        await ctx.send("> Bani o membro solicitado")
-        await self.bot.logs_channel.send(embed=
-            discord.Embed(
+        await ctx.send(f"> Bani *{member}* com sucesso :tada:! Lembre-se de reportar atividades esquisitas que quebram as regras usando *==report [member]*")
+        await self.bot.logs_channel.send(
+            embed=discord.Embed(
                 description=
                     f"***\U00002702 Banido***: {member} *({member.id})*\n"
                     f"***\U0001f451 Admin***: {ctx.author} *({ctx.author.id})*\n"
@@ -45,11 +45,11 @@ class Moderation(commands.Cog):
     @commands.command(name="unban", help="Desbane um mebro", hidden=True)
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
-        await member.unban(reason=reason or "Motivo não informado")
+        await member.unban(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
 
-        await ctx.send("> Desbani o membro solicitado")
-        await self.bot.logs_channel.send(embed=
-            discord.Embed(
+        await ctx.send(f"> Desbani *{member}* com sucesso :tada:! Lembre-se de reportar atividades esquisitas que quebram as regras usando *==report [member]*")
+        await self.bot.logs_channel.send(
+            embed=discord.Embed(
                 description=
                     f"***\U00002702 Desbanido***: {member} *({member.id})*\n"
                     f"***\U0001f451 Admin***: {ctx.author} *({ctx.author.id})*\n"
@@ -64,11 +64,11 @@ class Moderation(commands.Cog):
     @commands.command(name="kick", help="Expula um mebro", hidden=True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
-        await member.kick(reason=reason or "Motivo não informado")
+        await member.kick(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
 
-        await ctx.send("> Kikei no membro solicitado")
-        await self.bot.logs_channel.send(embed=
-            discord.Embed(
+        await ctx.send(f"> Kikei no *{member}* com sucesso :tada:! Lembre-se de reportar atividades esquisitas que quebram as regras usando *==report [member]*")
+        await self.bot.logs_channel.send(
+            embed=discord.Embed(
                 description=
                     f"***\U00002702 Expulso***: {member} *({member.id})*\n"
                     f"***\U0001f451 Admin***: {ctx.author} *({ctx.author.id})*\n"
@@ -88,11 +88,11 @@ class Moderation(commands.Cog):
         if member.is_timed_out():
             return await ctx.send(f"> O Membro *{member}* já está silenciado")
 
-        await member.timeout(dt.timedelta(seconds=on_seconds))
+        await member.timeout(dt.timedelta(seconds=on_seconds), reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
         await ctx.send(f"> Silenciei *{member}* por *{time}* com sucesso! :tada:")
 
-        await self.bot.logs_channel.send(embed=
-            discord.Embed(
+        await self.bot.logs_channel.send(
+            embed=discord.Embed(
                 description=
                     f"***\U0001f507 Silenciado***: {member.mention} *({member.id})*\n"
                     f"***\U0001f451 Admin***: {ctx.author} *({ctx.author.id})*\n"
@@ -108,15 +108,14 @@ class Moderation(commands.Cog):
     @commands.command(name="unmute", help="Desmuta um usuário", hidden=True)
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
-        
         if not member.is_timed_out():
             return await ctx.send(f"> O Membro *{member}* não está silenciado!")
 
-        await member.timeout(None)
+        await member.timeout(None, reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
         await ctx.send(f"> Desmutei *{member}* com sucesso! :tada:")
 
-        await self.bot.logs_channel.send(embed=
-            discord.Embed(
+        await self.bot.logs_channel.send(
+            embed=discord.Embed(
                 description=
                     f"***\U0001f507 Desmutado***: {member} *({member.id})*\n"
                     f"***\U0001f451 Admin***: {ctx.author} *({ctx.author.id})*\n"
@@ -221,7 +220,7 @@ class Moderation(commands.Cog):
     @commands.command(name="clear", help="Limpa o chat", hidden=True)
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx: commands.Context, limit: int, reason: Optional[str]=None) -> None:
-        deleted = await ctx.channel.purge(limit=limit, reason=reason or "Nenhum motivo informado")
+        deleted = await ctx.channel.purge(limit=limit, reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
         await ctx.send(f"> Limpei {len(deleted)} mensagens com sucesso")
 
     @commands.command(name="say", hidden=True)
