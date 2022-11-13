@@ -72,19 +72,6 @@ class Fun(commands.Cog):
     async def gay(self, ctx: commands.Context) -> None:
         await ctx.send(f"> *{ctx.author}* é {random.randint(0, 100)}% gay")
 
-    @commands.command(name="desafiar", aliases=["duelo", "duelar"], help="Já pensou em desafiar aquele membro pra um duelo? Esse comando é pra você!")
-    async def challenge(self, ctx: commands.Context, member: discord.Member) -> None:
-        winner = random.choice([ctx.author, member])
-
-        msg = await ctx.send(f"> Ei {member.mention}, deseja participar de um duelo contra {ctx.author.mention}? Confirme sua participação reagindo no botão abaixo")
-        await msg.add_reaction("\U00002705")
-
-        with contextlib.suppress(asyncio.TimeoutError):
-            await self.bot.wait_for("reaction_add", check=lambda r, u: r.message.id == msg.id and str(r) == "\U00002705" and u == member and not u.bot, timeout=60)
-        
-        await msg.clear_reactions()
-        await msg.edit(content=f"> {winner.name} ganhou o duelo! Parabéns")
-
     @commands.command(name="jogo", help="Gera uma ideia de jogo muito louca!")
     async def game_ideia(self, ctx: commands.Context, member: discord.Member=None) -> None:
         gen = IdeiaGenerator()
