@@ -6,7 +6,6 @@ from typing import (
 )
 
 from components import ViewSubmitSuggestion
-from utils.databases import LevesDatabase
 from utils.databases import Suggestions
 from discord.ext import commands
 from utils import Configs
@@ -79,41 +78,6 @@ class Others(commands.Cog):
             await s_message.edit(embed=embed)
 
             await ctx.send("> Sugestão aprovada com sucesso!")
-
-    @commands.command(name="rank", help="Mostra seu nível")
-    async def rank(self, ctx: commands.Context, member: Optional[discord.Member]=None) -> None:
-        async with LevesDatabase() as db:
-            if member:
-                xp, lvl = await db.get_rank(member.id)
-            else:
-                xp, lvl = await db.get_rank(ctx.author.id)
-            
-            await ctx.send(f"> {('*' + str(member) + '*') if member else 'Você'} é ***level {lvl}*** com ***{xp}xp***")
-
-    @commands.command(name="leaderboard", aliases=["top"], help="Leaderboard de xp do server")
-    async def leaderboard(self, ctx: commands.Context) -> None:
-        async with ctx.typing():
-            ranks: list[dict[str, Union[int, str]]] = []
-            async with LevesDatabase() as db:
-                leaderboard_ids = await db.get_leaderboard_ids()
-                for m_id in leaderboard_ids:
-                    xp, lvl = await db.get_rank(m_id)
-                    member = await ctx.guild.fetch_member(m_id)
-                    ranks.append({"xp": xp, "lvl": lvl, "name": member.name})
-
-                ranks = sorted(ranks, key=lambda x: x["xp"], reverse=True)
-
-            msg = ""
-            for pos, member in enumerate(ranks):
-                msg = msg + f"***{pos + 1}. {member.get('name')}*** *level {member.get('lvl')} - {member.get('xp'):,}xp*\n"
-
-            embed = discord.Embed(
-                title="Leaderboard",
-                description=msg,
-                color=discord.Color.brand_green()
-                )
-
-            await ctx.send(embed=embed)
 
     @commands.command(name="source", help="URL para o código do bot")
     async def source(self, ctx: commands.Context) -> None:
