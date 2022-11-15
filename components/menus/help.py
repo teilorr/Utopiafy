@@ -4,20 +4,20 @@ from discord.ext import commands
 from discord import ui 
 import typing as t
 import discord
+import re
 
 T = t.TypeVar("T")
 
 class Dropdown(ui.Select):
     def __init__(self, mapping: t.Mapping[commands.Cog, list[commands.Command]], help_class: "HelpClass"):
         self.help_class = help_class
-        self.mapping = mapping
 
         super().__init__(
             placeholder="Escolha a categoria...", 
             min_values=1, 
             max_values=1,
             options=[
-                discord.SelectOption(label=cog.qualified_name, value=cog.qualified_name) 
+                discord.SelectOption(label=cog.qualified_name, emoji=re.search(r":(.+?):", cog.description).group(1))
                 for cog in mapping.keys()
                 if not getattr(cog, "hidden", False) and cog
             ]
@@ -38,7 +38,6 @@ class Dropdown(ui.Select):
 
         embed = discord.Embed(
             title=f"{selected}",
-            description=cog.description,
             color=discord.Color.greyple()
         )
         embed.add_field(name=f"Visualizando `{len(msg)}` comandos", value="\n".join(msg))

@@ -10,7 +10,7 @@ if t.TYPE_CHECKING:
     from core import Utopify
 
 class Info(commands.Cog):
-    """Comandos informacionais"""
+    """:\U00002754:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 

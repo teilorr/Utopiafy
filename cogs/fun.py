@@ -16,8 +16,8 @@ random = Random()
 if TYPE_CHECKING:
     from core import Utopify
 
-class Fun(commands.Cog):
-    """Comandos de diversão"""
+class Fun(commands.Cog, name="Diversão"):
+    """:\U0001f923:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 

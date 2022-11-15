@@ -19,12 +19,12 @@ from components.menus.show_warns import MySource, WarnsMenuPages
 if TYPE_CHECKING:
     from core import Utopify
 
-class Moderation(commands.Cog):
-    """Comandos de moderação"""
+class Moderation(commands.Cog, name="Moderação"):
+    """:\U00002694:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 
-    @commands.command(name="ban", help="Bane um mebro", hidden=True)
+    @commands.command(name="ban", help="Bane um mebro")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
         await member.ban(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
@@ -43,7 +43,7 @@ class Moderation(commands.Cog):
             .set_author(name=f"{member.name} foi banido por {ctx.author.name}")
         )
 
-    @commands.command(name="unban", help="Desbane um mebro", hidden=True)
+    @commands.command(name="unban", help="Desbane um mebro")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
         await member.unban(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
@@ -62,7 +62,7 @@ class Moderation(commands.Cog):
             .set_author(name=f"{member.name} foi debanido por {ctx.author.name}")
         )
 
-    @commands.command(name="kick", help="Expula um mebro", hidden=True)
+    @commands.command(name="kick", help="Expula um mebro")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
         await member.kick(reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
@@ -81,7 +81,7 @@ class Moderation(commands.Cog):
             .set_author(name=f"{member.name} foi expulso por {ctx.author.name}")
         )
 
-    @commands.command(name="mute", help="Silencia um usuário", hidden=True)
+    @commands.command(name="mute", help="Silencia um usuário")
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx: commands.Context, member: discord.Member, time: str, *, reason: str=None) -> None:
         on_seconds = await convertToSeconds().convert(ctx, time)
@@ -106,7 +106,7 @@ class Moderation(commands.Cog):
             .set_author(name=f"{member.name} foi silenciado por {ctx.author.name}")
         )
 
-    @commands.command(name="unmute", help="Desmuta um usuário", hidden=True)
+    @commands.command(name="unmute", help="Desmuta um usuário")
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx: commands.Context, member: discord.Member, *, reason: str=None) -> None:
         if not member.is_timed_out():
@@ -153,7 +153,7 @@ class Moderation(commands.Cog):
         await logs_msg.add_reaction("\U00002b1c") # quadrado branco
         await logs_msg.add_reaction("\U0001f5d1") # lixeira
 
-    @commands.command(name="warn", help="Avisa o membro solicitado", hidden=True)
+    @commands.command(name="warn", help="Avisa o membro solicitado")
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx: commands.Context, member: discord.Member, *, reason: str) -> None:
         async with WarningsDatabase() as db:
@@ -186,7 +186,7 @@ class Moderation(commands.Cog):
             menu = WarnsMenuPages(formatter)
             await menu.start(ctx)
 
-    @commands.command(name="remove_warn", aliases=["warn_remove"], help="Remove um warn baseado no id do mesmo", hidden=True)
+    @commands.command(name="remove_warn", aliases=["warn_remove"], help="Remove um warn baseado no id do mesmo")
     @commands.has_permissions(manage_channels=True)
     async def remove_warn(self, ctx: commands.Context, warn_id: int) -> None:
         async with WarningsDatabase() as db:
@@ -211,20 +211,20 @@ class Moderation(commands.Cog):
             await ctx.send(f"> Deletei o warn de *{member}* com sucesso", embed=embed)
             await self.bot.logs_channel.send(embed=embed)
 
-    @commands.command(name="clear_warnings", aliases=["clear_warns"], help="Limpa os warns do membro solicitado", hidden=True)
+    @commands.command(name="clear_warnings", aliases=["clear_warns"], help="Limpa os warns do membro solicitado")
     @commands.has_permissions(manage_channels=True)
     async def clear_warns(self, ctx: commands.Context, member: discord.Member) -> None:
         async with WarningsDatabase() as db:
             await db.clear_warns_from(member, current_guild=ctx.guild)
             await ctx.send(f"> Limpei os warns de *{member}* com sucesso! :tada:")
 
-    @commands.command(name="clear", help="Limpa o chat", hidden=True)
+    @commands.command(name="clear", help="Limpa o chat")
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx: commands.Context, limit: int, reason: Optional[str]=None) -> None:
         deleted = await ctx.channel.purge(limit=limit, reason=reason + f" | Author: {ctx.author}" or f"Motivo não informado | Author: {ctx.author}")
         await ctx.send(f"> Limpei {len(deleted)} mensagens com sucesso")
 
-    @commands.command(name="say", hidden=True)
+    @commands.command(name="say")
     @commands.has_permissions(manage_messages=True)
     async def say(self, ctx: commands.Context, channel: discord.TextChannel, *, msg: str) -> None:
         await channel.send(msg)

@@ -15,7 +15,8 @@ import discord
 if TYPE_CHECKING:
     from core import Utopify
 
-class Others(commands.Cog):
+class Others(commands.Cog, name="Outros"):
+    """:\U0001f530:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 
