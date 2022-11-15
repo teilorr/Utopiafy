@@ -1,75 +1,43 @@
-from discord.ext import commands, menus
+from __future__ import annotations
+
 from collections.abc import Mapping
-from itertools import starmap
+from discord.ext import commands
 from discord import ui 
-import datetime as dt
+import typing as t
 import discord
 
-from typing import TypeVar
+T = t.TypeVar("T")
 
-T = TypeVar("T")
+class Dropdown(ui.Select):
+    def __init__(self, mapping: t.Mapping[commands.Cog, list[commands.Command]]):
+        self.mapping: dict[str, list[commands.Command]] = {}
+        for _, cmds in mapping.items():
+            for cmd in cmds:
+                self.mapping[cmd.cog_name] = cmds
+        self.mapping.pop(None)
 
-class helpPageSource(menus.ListPageSource):
-    def __init__(self, 
-                data, 
-                help_class,
-                ):
-        super().__init__(data, per_page=6)
-        self.bot_commands: list[commands.Command] = data
-        self.help_class: "HelpClass" = help_class
+        super().__init__(
+            placeholder="Escolha a categoria...", 
+            min_values=1, 
+            max_values=1,
+            options=[
+                discord.SelectOption(label=cog, value=cog) 
+                for cog in self.mapping.keys()
+                if not getattr(cog, "hidden", False)
+            ] 
+        )
 
-    def format_command_on_help(self, no, command: commands.Command):
-        signature = self.help_class.get_command_signature(command)
-        docs = self.help_class.get_command_brief(command)
-        return f"**{signature}** - *{docs}*\n"
-
-    async def format_page(self, menu, entries):
-        today = dt.datetime.now().strftime('%d/%m/%Y')
-
-        page = menu.current_page
-        max_page = self.get_max_pages()
-
-        iterator = starmap(self.format_command_on_help, enumerate(entries, start=page * self.per_page + 1))
-        page_content = ''.join(iterator)
-
-        embed = discord.Embed(title=f'Help - `{page + 1}/{max_page}`',
-                              color=discord.Color.brand_green())
-        embed.add_field(name=f'Total de comandos no bot: `{len(self.bot_commands)}`', value=page_content)
-        embed.set_footer(text=f'{menu.ctx.author} • {today}  ', icon_url=menu.ctx.author.avatar)
-        return embed 
-
-class menuPages(ui.View, menus.MenuPages):
-    def __init__(self, source: menus.ListPageSource, *, delete_message_after: bool=False):
-        super().__init__(timeout=60)
-        self.delete_message_after: bool = delete_message_after
-        self._source: menus.ListPageSource = source
-        self.message: discord.Message | None = None
-        self.ctx: commands.Context | None = None
-        self.current_page: int | None = 0
-
-    async def start(self, ctx: commands.Context, *, channel=None, wait=False):
-        await self._source._prepare_once()
-        self.ctx = ctx
-        self.message = await self.send_initial_message(ctx, ctx.channel)
-
-    async def _get_kwargs_from_page(self, page):
-        value = await super()._get_kwargs_from_page(page)
-        if 'view' not in value:
-            value.update({'view': self})
-        return value
-
-    async def interaction_check(self, interaction: discord.Interaction):
-        return interaction.user == self.ctx.author
-
-    @ui.button(emoji='⬅', style=discord.ButtonStyle.grey, custom_id='left')
-    async def before_page(self, interaction: discord.Interaction, _):
-        await self.show_checked_page(self.current_page - 1)
-        await interaction.response.edit_message(view=self)
-
-    @ui.button(emoji='➡', style=discord.ButtonStyle.grey, custom_id='right')
-    async def next_page(self, interaction: discord.Interaction, _):
-        await self.show_checked_page(self.current_page + 1)
-        await interaction.response.edit_message(view=self)
+    async def callback(self, interaction: discord.Interaction) -> t.Any:
+        selected = self.values[0]
+        commands = self.mapping[selected]
+        await interaction.response.edit_message(
+            content="",
+            embed=discord.Embed(
+                title=f"Ajuda de {selected}",
+                description="".join(f"***{command.name} {command.signature}*** - *{command.help or 'Comando não documentado'}*\n" for command in commands),
+                color=discord.Color.brand_green()
+            )
+        )
 
     async def on_timeout(self) -> None:
         for child in self.children:
@@ -87,20 +55,12 @@ class HelpClass(commands.HelpCommand):
         return command.short_doc or 'O Comando não está documentado'
 
     async def send_bot_help(self, mapping: Mapping[commands.Cog, T]):
-        usable_commands: list[commands.Command] = []
-        for cog in mapping.keys():
-            try:
-                for command in cog.walk_commands():
-                    if not command.hidden:
-                        usable_commands.append(command)
-            except AttributeError: # NoneType na lista de cogs
-                pass
-
-        staff_role = self.context.guild.get_role(794460618283417613)
-        formatter = helpPageSource(list(self.context.bot.commands) if staff_role in self.context.author.roles else usable_commands, self)
-        menu = menuPages(formatter, delete_message_after=True)
-        
-        await menu.start(self.context)
+        view = ui.View().add_item(Dropdown(mapping))
+        channel = self.get_destination()
+        await channel.send(
+            content="> Selecione uma das categorias abaixo para visualizar os comandos relacionados",
+            view=view
+        )
 
     async def send_command_help(self, command: commands.Command):
         channel = self.get_destination()
