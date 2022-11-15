@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 class AutoGold(commands.Cog):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
+        self.hidden = True
 
     @commands.Cog.listener(name="on_ready")
     async def on_ready(self) -> None:

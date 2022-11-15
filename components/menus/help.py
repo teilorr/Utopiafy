@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from discord.ext import commands
 from discord import ui 
 import typing as t
@@ -9,40 +8,44 @@ import discord
 T = t.TypeVar("T")
 
 class Dropdown(ui.Select):
-    def __init__(self, mapping: t.Mapping[commands.Cog, list[commands.Command]]):
-        self.mapping: dict[str, list[commands.Command]] = {}
-        for _, cmds in mapping.items():
-            for cmd in cmds:
-                self.mapping[cmd.cog_name] = cmds
-        self.mapping.pop(None)
+    def __init__(self, mapping: t.Mapping[commands.Cog, list[commands.Command]], help_class: "HelpClass"):
+        self.help_class = help_class
+        self.mapping = mapping
 
         super().__init__(
             placeholder="Escolha a categoria...", 
             min_values=1, 
             max_values=1,
             options=[
-                discord.SelectOption(label=cog, value=cog) 
-                for cog in self.mapping.keys()
-                if not getattr(cog, "hidden", False)
-            ] 
+                discord.SelectOption(label=cog.qualified_name, value=cog.qualified_name) 
+                for cog in mapping.keys()
+                if not getattr(cog, "hidden", False) and cog
+            ]
         )
+
+    async def create_message_for(self, cog: commands.Cog) -> list[str]:
+        result: list[str] = []
+        for cmd in await self.help_class.filter_commands(cog.get_commands()):
+            result.append(f"***{self.help_class.get_command_signature(cmd)}*** - *{self.help_class.get_command_brief(cmd)}*")
+
+        return result
 
     async def callback(self, interaction: discord.Interaction) -> t.Any:
         selected = self.values[0]
-        commands = self.mapping[selected]
+
+        cog = self.help_class.context.bot.get_cog(selected)
+        msg = await self.create_message_for(cog)
+
+        embed = discord.Embed(
+            title=f"{selected}",
+            description=cog.description,
+            color=discord.Color.greyple()
+        )
+        embed.add_field(name=f"Visualizando `{len(msg)}` comandos", value="\n".join(msg))
         await interaction.response.edit_message(
             content="",
-            embed=discord.Embed(
-                title=f"Ajuda de {selected}",
-                description="".join(f"***{command.name} {command.signature}*** - *{command.help or 'Comando não documentado'}*\n" for command in commands),
-                color=discord.Color.brand_green()
-            )
+            embed=embed
         )
-
-    async def on_timeout(self) -> None:
-        for child in self.children:
-            child.disabled = True
-        await self.message.edit(view=self)
 
 class HelpClass(commands.HelpCommand):
     def __init__(self):
@@ -54,8 +57,8 @@ class HelpClass(commands.HelpCommand):
     def get_command_brief(self, command: commands.Command):
         return command.short_doc or 'O Comando não está documentado'
 
-    async def send_bot_help(self, mapping: Mapping[commands.Cog, T]):
-        view = ui.View().add_item(Dropdown(mapping))
+    async def send_bot_help(self, mapping: t.Mapping[commands.Cog, list[commands.Command]]):
+        view = ui.View().add_item(Dropdown(mapping, self))
         channel = self.get_destination()
         await channel.send(
             content="> Selecione uma das categorias abaixo para visualizar os comandos relacionados",

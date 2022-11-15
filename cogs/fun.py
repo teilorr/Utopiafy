@@ -9,7 +9,6 @@ import discord
 from utils.others.phrase_gen import IdeiaGenerator
 from random import Random
 import datetime as dt
-import contextlib
 import asyncio
 
 random = Random()
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from core import Utopify
 
 class Fun(commands.Cog):
+    """Comandos de diversão"""
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 

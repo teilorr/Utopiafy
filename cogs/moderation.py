@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from core import Utopify
 
 class Moderation(commands.Cog):
+    """Comandos de moderação"""
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 
@@ -172,7 +173,7 @@ class Moderation(commands.Cog):
             await self.bot.logs_channel.send(embed=embed)
             await ctx.send(embed=embed)
 
-    @commands.command(name="warnings", aliases=["warns"], help="Mostra os warns do membro solicitado", hidden=True)
+    @commands.command(name="warnings", aliases=["warns"], help="Mostra os warns do membro solicitado")
     async def warns(self, ctx: commands.Context, member: discord.Member) -> None:
         async with WarningsDatabase() as db:
             warns = await db.get_warns_from(member)
@@ -210,7 +211,7 @@ class Moderation(commands.Cog):
             await ctx.send(f"> Deletei o warn de *{member}* com sucesso", embed=embed)
             await self.bot.logs_channel.send(embed=embed)
 
-    @commands.command(name="clear_warnings", aliases=["clear_warns"], help="Limpa os warns do membro solicitado",hidden=True)
+    @commands.command(name="clear_warnings", aliases=["clear_warns"], help="Limpa os warns do membro solicitado", hidden=True)
     @commands.has_permissions(manage_channels=True)
     async def clear_warns(self, ctx: commands.Context, member: discord.Member) -> None:
         async with WarningsDatabase() as db:

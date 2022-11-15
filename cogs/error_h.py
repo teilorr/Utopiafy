@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 class ErrorHandler(commands.Cog):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
+        self.hidden = True
 
     @commands.Cog.listener(name="on_command_error")
     async def on_command_error(self, ctx: commands.Context, error):

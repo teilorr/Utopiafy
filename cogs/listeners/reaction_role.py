@@ -15,6 +15,8 @@ class ReactionRole(commands.Cog):
         self.bot = bot
         self.reaction_message_id: int = Configs.reaction_role_message_id
 
+        self.hidden = True
+
     @commands.Cog.listener("on_raw_reaction_add")
     async def add_reaction_role(self, payload: discord.RawReactionActionEvent) -> None:
         if payload.user_id == self.bot.user.id:

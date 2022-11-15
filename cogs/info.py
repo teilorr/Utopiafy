@@ -10,6 +10,7 @@ if t.TYPE_CHECKING:
     from core import Utopify
 
 class Info(commands.Cog):
+    """Comandos informacionais"""
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
 

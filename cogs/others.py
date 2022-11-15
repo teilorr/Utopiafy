@@ -83,6 +83,11 @@ class Others(commands.Cog):
     async def source(self, ctx: commands.Context) -> None:
         await ctx.send("> *Source:* ***https://github.com/teilorr/Utopiafy***")
 
+    @commands.command(name="add_role")
+    async def add_role(self, ctx: commands.Context, role: int) -> None:
+        role: discord.Role = ctx.guild.get_role(role)
+        await ctx.send(f"> Adicionei o cargo {role.name} para *{ctx.author}* com sucesso!")
+
 async def setup(bot: Utopify) -> None:
     cog = Others(bot)
     await bot.add_cog(cog)

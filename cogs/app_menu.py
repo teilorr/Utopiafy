@@ -19,6 +19,8 @@ class AppMenuCog(commands.Cog):
            callback=self.ctx_menu_userinfo_callback
         )
 
+        self.hidden = True
+
     async def ctx_menu_userinfo_callback(self, interaction: discord.Interaction, member: discord.Member) -> None:
             joined_at_formated = discord.utils.format_dt(member.joined_at)
             created_at_formated = discord.utils.format_dt(member.created_at)
