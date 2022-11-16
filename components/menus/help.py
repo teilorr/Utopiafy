@@ -25,8 +25,8 @@ class Dropdown(ui.Select):
 
     async def create_message_for(self, cog: commands.Cog) -> list[str]:
         result: list[str] = []
-        for cmd in await self.help_class.filter_commands(cog.get_commands()):
-            result.append(f"***{self.help_class.get_command_signature(cmd)}*** - *{self.help_class.get_command_brief(cmd)}*")
+        for i, cmd in enumerate(await self.help_class.filter_commands(cog.get_commands()), start=1):
+            result.append(f"*{i}.* ***{self.help_class.get_command_signature(cmd)}*** - *{self.help_class.get_command_brief(cmd)}*")
 
         return result
 
