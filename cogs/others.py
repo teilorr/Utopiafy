@@ -89,16 +89,6 @@ class Others(commands.Cog, name="Outros"):
         role: discord.Role = ctx.guild.get_role(role)
         await ctx.send(f"> Adicionei o cargo {role.name} para *{ctx.author}* com sucesso!")
 
-    @commands.command(name="afk")
-    async def set_afk(self, ctx: commands.Context, *, reason: str) -> None:
-        async with AfkDB() as db:
-            try:
-                await db.add(ctx.author.id, reason)
-            except: # User já está afk
-                pass
-        await ctx.author.edit(nick=f"[AFK] {ctx.author.nick}")
-        await ctx.send(f"> {ctx.author.mention} Defini seu AFK: {reason}")
-
 async def setup(bot: Utopify) -> None:
     cog = Others(bot)
     await bot.add_cog(cog)
