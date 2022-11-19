@@ -20,6 +20,7 @@ class Utopify(commands.Bot):
             activity=discord.Game(name="Em busca do Utopia Automático"),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False,
+                roles=False,
                 users=True,
             )
         )
