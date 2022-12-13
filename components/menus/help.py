@@ -46,6 +46,16 @@ class Dropdown(ui.Select):
             embed=embed
         )
 
+class HelpView(ui.View):
+    def __init__(self, dropdown: Dropdown) -> None:
+        super().__init__()
+
+        self.dropdown = dropdown
+        self.add_item(dropdown)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return interaction.user.id == self.dropdown.help_class.context.author.id
+
 class HelpClass(commands.HelpCommand):
     def __init__(self):
         super().__init__(command_attrs={})
@@ -57,7 +67,7 @@ class HelpClass(commands.HelpCommand):
         return command.short_doc or 'O Comando não está documentado'
 
     async def send_bot_help(self, mapping: t.Mapping[commands.Cog, list[commands.Command]]):
-        view = ui.View().add_item(Dropdown(mapping, self))
+        view = HelpView(Dropdown(mapping, self))
         channel = self.get_destination()
         await channel.send(
             content="> Selecione uma das categorias abaixo para visualizar os comandos relacionados",

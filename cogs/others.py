@@ -5,8 +5,8 @@ from typing import (
     Union
 )
 
-from utils.databases import Suggestions, AfkDB
 from components import ViewSubmitSuggestion
+from utils.databases import Suggestions
 from discord.ext import commands
 from utils import Configs
 import datetime as dt
