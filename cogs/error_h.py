@@ -7,10 +7,12 @@ from difflib import get_close_matches
 from discord.ext import commands
 import discord
 
+from utils import Cog
+
 if TYPE_CHECKING:
     from core import Utopify
 
-class ErrorHandler(commands.Cog):
+class ErrorHandler(Cog, hidden=True):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
         self.hidden = True

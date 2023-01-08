@@ -16,10 +16,12 @@ from utils import (
 import datetime as dt
 from components.menus.show_warns import MySource, WarnsMenuPages
 
+from utils import Cog
+
 if TYPE_CHECKING:
     from core import Utopify
 
-class Moderation(commands.Cog, name="Moderação"):
+class Moderation(Cog, name="Moderação"):
     """:\U00002694:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
@@ -136,15 +138,16 @@ class Moderation(commands.Cog, name="Moderação"):
         embed = discord.Embed(
             description=
                 f"***\U0001f50e Reportado***: {member.mention} *({member.id})*\n"
-                f"***\U0001f4dc Motivo***: {reason} | [Ver mensagem]({ctx.message.jump_url})\n"
+                f"***\U0001f4dc Motivo***: [Ver mensagem]({ctx.message.jump_url})\n"
                 f"***\U00000023 Canal***: {ctx.channel.mention}\n"
             ,
             color=0x00000 # preto
         )
+        embed.add_field(name="Motivo", value=f"```{reason}```")
         embed.set_author(name=f"Autor do report: {ctx.author.name} ({ctx.author.id})")
         embed.timestamp = dt.datetime.now()
 
-        await ctx.send(f"> *{member}* foi reportado com sucesso")
+        await ctx.author.send(f"> *{member}* foi reportado com sucesso")
         logs_msg = await report_channel.send(embed=embed)
         
         await logs_msg.add_reaction("\U0001f7e9") # quadrado verde
@@ -223,10 +226,11 @@ class Moderation(commands.Cog, name="Moderação"):
     async def clear(self, ctx: commands.Context, members: commands.Greedy[discord.Member], limit: commands.Range[int, 0, 100], reason: str="Motivo não informado") -> None:
         if members:
             def check(msg: discord.Message) -> bool:
-                return msg.author.id == members[0].id
+                return (not members) or (msg.author in members)
 
             await ctx.channel.purge(limit=limit, check=check, reason=reason + f" | Author: {ctx.author}")
-            return await ctx.send(f"> Limpei as mensagens de *{members[0]}* com sucesso!")
+            await ctx.send("deletei tudo chefe")
+            return
 
         deleted = await ctx.channel.purge(limit=limit, reason=reason + f" | Author: {ctx.author}")
         await ctx.send(f"> Limpei {len(deleted)} mensagens com sucesso")

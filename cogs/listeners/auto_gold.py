@@ -2,23 +2,21 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING
 )
-from discord.ext import commands, tasks # type: ignore
+from discord.ext import tasks
+from utils import Cog
 import discord
 
 if TYPE_CHECKING:
     from core import Utopify
 
-class AutoGold(commands.Cog):
+class AutoGold(Cog, hidden=True):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
-        self.hidden = True
 
-    @commands.Cog.listener(name="on_ready")
-    async def on_ready(self) -> None:
         self.add_roles.start()
         self.remove_roles.start()
 
-    @tasks.loop(seconds=5)
+    @tasks.loop(minutes=5)
     async def add_roles(self) -> None:
         roles_ids = [833796078544486405, 723652473855803425, 794461214012604437, 588752987590230037]
         for role_id in roles_ids:
@@ -30,7 +28,7 @@ class AutoGold(commands.Cog):
 
                 await member.add_roles(gold) # type: ignore 
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(minutes=10)
     async def remove_roles(self) -> None:
         gold = discord.utils.get(self.bot.utopia.roles, id=794461214028988437)
         role_list = (723652473855803425, 833796078544486405, 588752987590230037, 794461214012604437, 794460742128238602)

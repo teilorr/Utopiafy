@@ -12,7 +12,7 @@ class Utopify(commands.Bot):
     def __init__(self) -> None:
         self.utopia: discord.Guild = None
         super().__init__(
-            command_prefix=commands.when_mentioned_or("=="),
+            command_prefix="==",
             case_insensitive=True,
             strip_after_prefix=True,
             help_command=HelpClass(),
@@ -59,8 +59,6 @@ class Utopify(commands.Bot):
 
     async def on_ready(self) -> None:
         print(f"{self.user}/{self.user.id} online")
-
-
 
 utopify = Utopify()
 utopify.run(DotEnv.get("TOKEN"), log_level=40)

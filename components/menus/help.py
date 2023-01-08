@@ -6,10 +6,12 @@ import typing as t
 import discord
 import re
 
+from utils import Cog
+
 T = t.TypeVar("T")
 
 class Dropdown(ui.Select):
-    def __init__(self, mapping: t.Mapping[commands.Cog, list[commands.Command]], help_class: "HelpClass"):
+    def __init__(self, mapping: t.Mapping[Cog, list[commands.Command]], help_class: "HelpClass"):
         self.help_class = help_class
 
         super().__init__(
@@ -19,7 +21,7 @@ class Dropdown(ui.Select):
             options=[
                 discord.SelectOption(label=cog.qualified_name, emoji=re.search(r":(.+?):", cog.description).group(1))
                 for cog in mapping.keys()
-                if not getattr(cog, "hidden", False) and cog
+                if cog and (not cog.is_hidden()) 
             ]
         )
 
@@ -38,7 +40,7 @@ class Dropdown(ui.Select):
 
         embed = discord.Embed(
             title=f"{selected}",
-            color=discord.Color.greyple()
+            color=discord.Color.random()
         )
         embed.add_field(name=f"Visualizando `{len(msg)}` comandos", value="\n".join(msg))
         await interaction.response.edit_message(
@@ -66,7 +68,7 @@ class HelpClass(commands.HelpCommand):
     def get_command_brief(self, command: commands.Command):
         return command.short_doc or 'O Comando não está documentado'
 
-    async def send_bot_help(self, mapping: t.Mapping[commands.Cog, list[commands.Command]]):
+    async def send_bot_help(self, mapping: t.Mapping[Cog, list[commands.Command]]):
         view = HelpView(Dropdown(mapping, self))
         channel = self.get_destination()
         await channel.send(
@@ -80,7 +82,7 @@ class HelpClass(commands.HelpCommand):
         embed.add_field(name='Função', value=f'`{command.help or "O Comando não está documentado!"}`')
         alias = command.aliases
         if alias:
-            embed.add_field(name='Ou se preferir...', value=", ".join(alias), inline=False)
+            embed.add_field(name="Ou se preferir...", value=", ".join(alias), inline=False)
 
         await channel.send(embed=embed)
 

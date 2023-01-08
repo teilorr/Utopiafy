@@ -11,12 +11,14 @@ from random import Random
 import datetime as dt
 import asyncio
 
+from utils import Cog
+
 random = Random()
 
 if TYPE_CHECKING:
     from core import Utopify
 
-class Fun(commands.Cog, name="Diversão"):
+class Fun(Cog, name="Diversão"):
     """:\U0001f923:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
@@ -75,8 +77,40 @@ class Fun(commands.Cog, name="Diversão"):
     @commands.command(name="jogo", help="Gera uma ideia de jogo muito louca!")
     async def game_ideia(self, ctx: commands.Context, member: discord.Member=None) -> None:
         gen = IdeiaGenerator()
-        await ctx.send(f"> {gen.generate((member.nick or member.name) if member else (ctx.author.nick or ctx.author.name))}")
+        await ctx.send(f"> {gen.generate(member.display_name if member else ctx.author.display_name)}")
         
+    @commands.command(name="8ball", help="Faça uma pergunta e a bola mágica te responderá.")
+    async def eightball(self, ctx: commands.Context, *, _: str) -> None:
+        answers = {
+            "affirmative": [
+                "Certamente",
+                "Com certeza sim",
+                "Sem dúvidas!",
+                "Definitivamente sim",
+                "Pode ter certeza que sim",
+                "Da forma que eu vejo a situação, sim",
+                "Provavelmente sim",
+                "Sim",
+                "Sinais me dizem que sim"
+            ],
+            "neutral": [
+                "O futuro é nebuloso",
+                "Me pergunte novamente mais tarde...",
+                "Melhor não te falar agora",
+                "Não consigo prever isso agora",
+                "Se concetre e pergunte novamente"
+            ],
+            "negative": [
+                "Não conte com isso",
+                "Minha resposta é não",
+                "Minhas fontes dizem que não",
+                "Claro que não!",
+                "Eu tenho minhas dúvidas"
+            ]
+        }
+        category = answers.get(random.choice(list(answers.keys())))
+        answer = category[random.randint(0, len(category) - 1)]
+        await ctx.reply(f"> {answer}")
 
 async def setup(bot: Utopify) -> None:
     cog = Fun(bot)

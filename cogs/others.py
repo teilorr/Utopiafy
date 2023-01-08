@@ -8,14 +8,16 @@ from typing import (
 from components import ViewSubmitSuggestion
 from utils.databases import Suggestions
 from discord.ext import commands
-from utils import Configs
 import datetime as dt
 import discord
+
+from utils import Configs
+from utils import Cog
 
 if TYPE_CHECKING:
     from core import Utopify
 
-class Others(commands.Cog, name="Outros"):
+class Others(Cog, name="Outros"):
     """:\U0001f530:""" # Descrição para mostrar no ==help
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
@@ -79,6 +81,11 @@ class Others(commands.Cog, name="Outros"):
             await s_message.edit(embed=embed)
 
             await ctx.send("> Sugestão aprovada com sucesso!")
+
+    @commands.command(name="sync", hidden=True)
+    @commands.check(lambda ctx: ctx.author.id == Configs.owner_id)
+    async def sync(self, ctx: commands.Context) -> None:
+        await ctx.send(len(await self.bot.tree.sync()))
 
     @commands.command(name="source", help="URL para o código do bot")
     async def source(self, ctx: commands.Context) -> None:

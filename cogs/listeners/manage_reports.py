@@ -5,15 +5,15 @@ from typing import (
 
 from discord.ext import commands
 from utils import Configs
+from utils import Cog
 import discord
 
 if TYPE_CHECKING:
     from core import Utopify
 
-class ManageReports(commands.Cog):
+class ManageReports(Cog, hidden=True):
     def __init__(self, bot: Utopify) -> None:
         self.bot = bot
-        self.hidden = True
 
     @commands.Cog.listener(name="on_raw_reaction_add")
     async def change_embed_color(self, payload: discord.RawReactionActionEvent) -> None:
