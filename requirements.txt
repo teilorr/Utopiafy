@@ -1,5 +1,3 @@
-chattymarkov==1.3.0
-
 # Discord
 discord.py==2.0.0
 typing_extensions
